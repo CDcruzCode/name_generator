@@ -7,5 +7,5 @@ A probabilistic name generator that follows some basic language rules.
 <br>To use, simply use 'new Name_Generator().generate( max_length: {INT}, language: {STRING language_type} );'
 <br>
 <br>Supported Language Types:
-- English
+- English (Default)
 - Romaji (Romanization of Japanese)
