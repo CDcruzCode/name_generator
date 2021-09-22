@@ -1,5 +1,6 @@
 # name_generator
-A probabilistic name generator that follows some basic language rules.
+A probabilistic name generator that follows some basic language rules.<br>
+This generator is still very experimental, so results may vary.
 <br>Primarily based on the English language.
 <br>
 <br>This is a javascript class that allows you to quickly generate random names which are still pronouncable 90% of the time.
