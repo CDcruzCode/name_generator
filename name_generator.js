@@ -14,7 +14,7 @@ class Name_Generator {
   static #LVL7 = ["v","o","z"];
   static #LVL8 = ["f","o","t","h","s"];
   static #LVL9 = ["b","d","g"];
-  static #LVL10 = ["p","t","k",];
+  static #LVL10 = ["p","t","k"];
 
   #consonant_weights_mod;
   #vowel_weights_mod;
@@ -128,16 +128,18 @@ class Name_Generator {
      this.vowel_weights_mod = [...Name_Generator.#VOWEL_WEIGHTS];
 
   //Set language
-  switch (language.toLowerCase()) {
+  language = language.toLowerCase();
+  switch (language) {
     case "english": //English follows the constraints of 3 Consonants, 1 Vowel and 5 Consonants. CCCVCCCCC pattern. 5 Consonants is very unlikely though.
       break;
     case "romaji": //Japanese Romanji follows a CCV pattern with no coda. The only Coda allowed is a N.
       break;
     default:
+      console.warn("Invalid language_type inputted, defaulting to english.");
       language = "english";
   }
 
-  language = language.toLowerCase();
+
 
 
 
@@ -731,7 +733,6 @@ class Name_Generator {
 
         //SECOND LETTER
         if(it==2) {
-          console.log(this.consonant_weights_mod);
           if(Name_Generator.#VOWELS.includes(name_string[name_string.length-1])) {
             //First letter was a vowel
             if(Name_Generator.#rand_int(0,20) > 18) {
@@ -833,6 +834,8 @@ class Name_Generator {
     }
 
 
+
+    //NEED TO INCLUDE ō and ē characters. 2 Vowels in a row are also allowed but very rare, for example yokai.
   #generate_romaji() {
       let it = 0;
       let length_probability = this.#max_length;
@@ -857,12 +860,23 @@ class Name_Generator {
        //Check if name should end due to length
        //Random possibility of name generation ending per each cycle after first 3 letters.
        if( it >= Name_Generator.#rand_int(4,this.#max_length) || length_probability == 0) {
+         //console.log(name_string);
+         //If last letter is a consonant, chance of generating one last vowel if length is less than max_length
+         if(Name_Generator.#CONSONANTS.includes(name_string[name_string.length-1]) && name_string.length != this.#max_length && Name_Generator.#rand_int()<4) {
+           name_string += Name_Generator.#get_weighted_probability(Name_Generator.#VOWELS, this.vowel_weights_mod);
+         }
+
          //If the last 2 letters are consonants, remove them from the string
          if(Name_Generator.#CONSONANTS.includes(name_string[name_string.length-1])) {
            name_string = name_string.slice(0,-1);
          }
          if(Name_Generator.#CONSONANTS.includes(name_string[name_string.length-1])) {
            name_string = name_string.slice(0,-1);
+         }
+
+         //If last letter is a Vowel. Small change for the name to end with an N if name is not at max length.
+         if(Name_Generator.#VOWELS.includes(name_string[name_string.length-1]) && name_string.length != this.#max_length && Name_Generator.#rand_int() > 6) {
+           name_string += "n"
          }
          break;
        } else {
@@ -872,7 +886,10 @@ class Name_Generator {
 
         //Reset probabilities
         this.vowel_weights_mod = [...Name_Generator.#VOWEL_WEIGHTS];
-        this.consonant_weights_mod = [...Name_Generator.#CONSONANT_WEIGHTS_DIS];
+        this.consonant_weights_mod = [100,50,70,80,60,40,40,50,20,50,60,20,0,50,70,70,0,30,0,40,0];
+
+        //static #CONSONANTS = ["b","c","d","f","g","h","j","k","l","m","n","p","q","r","s","t","v","w","x","y","z"];
+        //static #CONSONANT_WEIGHTS_DIS = [100,50,70,80,60,40,40,50,20,50,60,30,0,50,70,70,0,30,10,40,0];
 
 
         //FIRST LETTER
@@ -888,9 +905,10 @@ class Name_Generator {
 
         //SECOND LETTER AND BEYOND
         if(it>=2) {
-          if(Name_Generator.#CONSONANTS.includes(name_string[name_string.length-2]) && Name_Generator.#CONSONANTS.includes(name_string[name_string.length-1]) ) {
+          if(it>2 && Name_Generator.#CONSONANTS.includes(name_string[name_string.length-2]) && Name_Generator.#CONSONANTS.includes(name_string[name_string.length-1]) ) {
             //If last 2 letters were consonants, next letter is definetly a vowel.
             name_string += Name_Generator.#get_weighted_probability(Name_Generator.#VOWELS, this.vowel_weights_mod);
+            continue;
           }
 
           if(Name_Generator.#VOWELS.includes(name_string[name_string.length-1])) {
@@ -898,12 +916,31 @@ class Name_Generator {
             name_string += Name_Generator.#get_weighted_probability(Name_Generator.#CONSONANTS, this.consonant_weights_mod);
           } else {
             //If last letter was a consonant, small chance of another consonant
-            if(Name_Generator.#rand_int() > 0) {
+            if(Name_Generator.#rand_int() > 2) {
               //Vowel more likely to be next letter
-              name_string += Name_Generator.#get_weighted_probability(Name_Generator.#VOWELS, this.vowel_weights_mod);
+              let chosen_vowel = Name_Generator.#get_weighted_probability(Name_Generator.#VOWELS, this.vowel_weights_mod);
+              if(chosen_vowel == "o" && Name_Generator.#rand_int() > 8) {
+                chosen_vowel = "ō";
+              }
+              if(chosen_vowel == "e" && Name_Generator.#rand_int() > 8) {
+                chosen_vowel = "ē";
+              }
+              name_string += chosen_vowel;
             } else {
               //Consonant less likely to be next letter
-              name_string += Name_Generator.#get_weighted_probability(Name_Generator.#CONSONANTS, this.consonant_weights_mod);
+              if(name_string[name_string.length-1] == "c") {
+                //If last letter was a C, then next letter must be a H
+                name_string += "h";
+                continue;
+              }
+
+              if(name_string[name_string.length-1] == "s" && Name_Generator.#rand_int() > 3) {
+                //If last letter was a S, then change for next letter to be H
+                name_string += "h";
+                continue;
+              }
+
+              //name_string += Name_Generator.#get_weighted_probability(Name_Generator.#CONSONANTS, this.consonant_weights_mod);
             }
           }
         }
@@ -914,11 +951,3 @@ class Name_Generator {
       return name_string;
     }
 }
-
-
-
-
-
-
-
-console.log(new Name_Generator().generate(8, "romaji") );
