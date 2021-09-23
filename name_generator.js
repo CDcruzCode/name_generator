@@ -178,6 +178,7 @@ class Name_Generator {
     let name_string = "";
 
     let end_name = false;
+    let is_coda = false;
     let onset_length = 0;
     let coda_length = 0;
        while(!end_name) {
@@ -209,516 +210,545 @@ class Name_Generator {
          this.vowel_weights_mod = [...Name_Generator.#VOWEL_WEIGHTS];
          this.consonant_weights_mod = [...Name_Generator.#CONSONANT_WEIGHTS];
 
+         //If coda count is greater than 4. Reset count and set Coda to false. This means the next letter must be a vowel or a consonat apart of the onset.
+         if(is_coda && coda_length > 4) {
+           is_coda = false;
+           coda_length = 0;
+         } else if(is_coda) {
+           coda_length++;
+         }
+         //If Onset count is greater than 3. Reset count and next letter MUST BE a vowel.
+         if(!is_coda && onset_length > 3) {
+           is_coda = true;
+           onset_length = 0;
+           name_string += Name_Generator.#get_weighted_probability(Name_Generator.#VOWELS, this.vowel_weights_mod);
+           continue;
+         } else if(!is_coda) {
+           onset_length++;
+         }
          //Set weights for starting consonant to match most frequently used consonants.
          if( name_string == "" || Name_Generator.#VOWELS.includes(name_string[name_string.length-1]) ) {
            this.consonant_weights_mod = [...Name_Generator.#CONSONANT_WEIGHTS_DIS];
-         }
+         } else if(is_coda) {
 
          //===MODIFY WEIGHTS DEPENDANT ON PREVIOUS LETTER===//
          //These weights are modified preceding any changes from the algorithm
-         if(name_string[name_string.length-1] == "b") {
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("b")] -= Name_Generator.#rand_int(1,10);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("c")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("d")] -= Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("f")] -= Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("g")] -= Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("h")] -= Name_Generator.#rand_int(1,10);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("j")] -= Name_Generator.#rand_int(5,50);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("k")] -= Name_Generator.#rand_int(5,50);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("l")] += Name_Generator.#rand_int(1,10);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("m")] -= Name_Generator.#rand_int(1,10);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("n")] -= Name_Generator.#rand_int(1,10);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("p")] -= Name_Generator.#rand_int(5,50);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("q")] -= Name_Generator.#rand_int(5,50);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("r")] += Name_Generator.#rand_int(1,10);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("s")] -= Name_Generator.#rand_int(4,40);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("t")] -= Name_Generator.#rand_int(5,50);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("v")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("w")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("x")] -= Name_Generator.#rand_int(3,30);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("y")] += Name_Generator.#rand_int(1,10);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("z")] = 0;
+         //If is_coda==true use weights for coda consonants, else use weights for onset consonants.
+
+           if(name_string[name_string.length-1] == "b") {
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("b")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("c")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("d")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("f")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("g")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("h")] -= Name_Generator.#rand_int(1,10);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("j")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("k")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("l")] += Name_Generator.#rand_int(1,10);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("m")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("n")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("p")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("q")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("r")] += Name_Generator.#rand_int(1,10);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("s")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("t")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("v")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("w")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("x")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("y")] += Name_Generator.#rand_int(1,10);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("z")] = 0;
+           }
+
+           if(name_string[name_string.length-1] == "c") {
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("b")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("c")] -= Name_Generator.#rand_int(1,10);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("d")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("f")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("g")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("h")] += Name_Generator.#rand_int(3,30);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("j")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("k")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("l")] += Name_Generator.#rand_int(1, 10);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("m")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("n")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("p")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("q")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("r")] += Name_Generator.#rand_int(3,30);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("s")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("t")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("v")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("w")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("x")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("y")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("z")] = 0;
+           }
+
+           if(name_string[name_string.length-1] == "d") {
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("b")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("c")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("d")] -= Name_Generator.#rand_int(7,70);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("f")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("g")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("h")] -= Name_Generator.#rand_int(6,60);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("j")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("k")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("l")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("m")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("n")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("p")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("q")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("r")] += Name_Generator.#rand_int(2,20);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("s")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("t")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("v")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("w")] += Name_Generator.#rand_int(5,50);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("x")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("y")] += Name_Generator.#rand_int(2,20);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("z")] = 0;
+           }
+
+           if(name_string[name_string.length-1] == "f") {
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("b")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("c")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("d")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("f")] -= Name_Generator.#rand_int(1,10);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("g")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("h")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("j")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("k")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("l")] += Name_Generator.#rand_int(2,20);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("m")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("n")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("p")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("q")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("r")] += Name_Generator.#rand_int(2,20);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("s")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("t")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("v")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("w")] += Name_Generator.#rand_int(2,20);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("x")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("y")] += Name_Generator.#rand_int(2,20);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("z")] = 0;
+           }
+
+           if(name_string[name_string.length-1] == "g") {
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("b")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("c")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("d")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("f")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("g")] -= Name_Generator.#rand_int(1,10);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("h")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("j")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("k")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("l")] -= Name_Generator.#rand_int(1,10);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("m")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("n")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("p")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("q")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("r")] += Name_Generator.#rand_int(1,10);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("s")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("t")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("v")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("w")] -= Name_Generator.#rand_int(1,10);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("x")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("y")] -= Name_Generator.#rand_int(1,10);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("z")] = 0;
+           }
+
+           if(name_string[name_string.length-1] == "h") {
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("b")] -= Name_Generator.#rand_int(2,20);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("c")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("d")] -= Name_Generator.#rand_int(7,70);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("f")] -= Name_Generator.#rand_int(6,60);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("g")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("h")] -= Name_Generator.#rand_int(1,10);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("j")] -= Name_Generator.#rand_int(5,50);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("k")] -= Name_Generator.#rand_int(2,20);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("l")] -= Name_Generator.#rand_int(2,20);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("m")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("n")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("p")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("q")] -= Name_Generator.#rand_int(2,20);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("r")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("s")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("t")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("v")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("w")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("x")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("y")] -= Name_Generator.#rand_int(5,50);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("z")] -= Name_Generator.#rand_int(5,50);
+           }
+
+           if(name_string[name_string.length-1] == "j") {
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("b")] -= Name_Generator.#rand_int(1,10);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("c")] -= Name_Generator.#rand_int(1,10);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("d")] -= Name_Generator.#rand_int(1,10);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("f")] -= Name_Generator.#rand_int(2,20);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("g")] -= Name_Generator.#rand_int(2,20);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("h")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("j")] -= Name_Generator.#rand_int(1,10);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("k")] -= Name_Generator.#rand_int(2,20);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("l")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("m")] -= Name_Generator.#rand_int(2,20);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("n")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("p")] -= Name_Generator.#rand_int(2,20);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("q")] -= Name_Generator.#rand_int(2,20);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("r")] += Name_Generator.#rand_int(1,10);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("s")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("t")] -= Name_Generator.#rand_int(2,20);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("v")] -= Name_Generator.#rand_int(2,20);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("w")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("x")] -= Name_Generator.#rand_int(2,20);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("y")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("z")] -= Name_Generator.#rand_int(2,20);
+           }
+
+           if(name_string[name_string.length-1] == "k") {
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("b")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("c")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("d")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("f")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("g")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("h")] += Name_Generator.#rand_int(1,20);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("j")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("k")] -= Name_Generator.#rand_int(1,10);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("l")] -= Name_Generator.#rand_int(1,10);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("m")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("n")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("p")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("q")] -= Name_Generator.#rand_int(1,10);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("r")] += Name_Generator.#rand_int(1,10);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("s")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("t")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("v")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("w")] -= Name_Generator.#rand_int(8,80);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("x")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("y")] -= Name_Generator.#rand_int(8,80);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("z")] = 0;
+           }
+
+           if(name_string[name_string.length-1] == "l") {
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("b")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("c")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("d")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("f")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("g")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("h")] -= Name_Generator.#rand_int(8,80);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("j")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("k")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("l")] -= Name_Generator.#rand_int(2,20);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("m")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("n")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("p")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("q")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("r")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("s")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("t")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("v")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("w")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("x")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("y")] -= Name_Generator.#rand_int(2,20);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("z")] = 0;
+           }
+
+           if(name_string[name_string.length-1] == "m") {
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("b")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("c")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("d")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("f")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("g")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("h")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("j")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("k")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("l")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("m")] -= Name_Generator.#rand_int(8,80);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("n")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("p")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("q")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("r")] -= Name_Generator.#rand_int(2,20);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("s")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("t")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("v")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("w")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("x")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("y")] -= Name_Generator.#rand_int(5,50);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("z")] = 0;
+           }
+
+           if(name_string[name_string.length-1] == "n") {
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("b")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("c")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("d")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("f")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("g")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("h")] -= Name_Generator.#rand_int(3,30);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("j")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("k")] -= Name_Generator.#rand_int(3,30);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("l")] -= Name_Generator.#rand_int(3,30);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("m")] -= Name_Generator.#rand_int(4,40);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("n")] -= Name_Generator.#rand_int(2,20);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("p")] -= Name_Generator.#rand_int(6,60);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("q")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("r")] -= Name_Generator.#rand_int(2,20);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("s")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("t")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("v")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("w")] -= Name_Generator.#rand_int(5,50);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("x")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("y")] -= Name_Generator.#rand_int(5,50);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("z")] = 0;
+           }
+
+           if(name_string[name_string.length-1] == "p") {
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("b")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("c")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("d")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("f")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("g")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("h")] -= Name_Generator.#rand_int(2,20);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("j")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("k")] -= Name_Generator.#rand_int(4,40);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("l")] -= Name_Generator.#rand_int(1,10);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("m")] -= Name_Generator.#rand_int(1,10);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("n")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("p")] -= Name_Generator.#rand_int(2,20);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("q")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("r")] -= Name_Generator.#rand_int(2,20);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("s")] -= Name_Generator.#rand_int(7,70);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("t")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("v")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("w")] -= Name_Generator.#rand_int(4,40);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("x")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("y")] -= Name_Generator.#rand_int(7,70);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("z")] = 0;
+           }
+
+           if(name_string[name_string.length-1] == "q") {
+             //THE LETTER Q IS ALWAYS FOLLOWED BY U. This has already been coded above. so this if block should never trigger.
+             /*
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("b")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("c")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("d")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("f")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("g")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("h")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("j")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("k")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("l")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("m")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("n")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("p")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("q")] -= Name_Generator.#rand_int(3,30);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("r")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("s")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("t")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("v")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("w")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("x")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("y")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("z")] = 0;*/
+           }
+
+           if(name_string[name_string.length-1] == "r") {
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("b")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("c")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("d")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("f")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("g")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("h")] -= Name_Generator.#rand_int(1,10);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("j")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("k")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("l")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("m")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("n")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("p")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("q")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("r")] -= Name_Generator.#rand_int(4,40);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("s")] -= Name_Generator.#rand_int(1,10);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("t")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("v")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("w")] -= Name_Generator.#rand_int(5,50);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("x")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("y")] -= Name_Generator.#rand_int(5,50);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("z")] = 0;
+           }
+
+           if(name_string[name_string.length-1] == "s") {
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("b")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("c")] -= Name_Generator.#rand_int(3,30);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("d")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("f")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("g")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("h")] += Name_Generator.#rand_int(2,20);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("j")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("k")] -= Name_Generator.#rand_int(2,20);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("l")] -= Name_Generator.#rand_int(2,20);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("m")] -= Name_Generator.#rand_int(2,20);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("n")] -= Name_Generator.#rand_int(2,20);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("p")] -= Name_Generator.#rand_int(2,20);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("q")] -= Name_Generator.#rand_int(2,20);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("r")] -= Name_Generator.#rand_int(2,20);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("s")] -= Name_Generator.#rand_int(2,20);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("t")] += Name_Generator.#rand_int(2,20);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("v")] -= Name_Generator.#rand_int(3,30);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("w")] += Name_Generator.#rand_int(2,20);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("x")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("y")] -= Name_Generator.#rand_int(5,50);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("z")] = 0;
+           }
+
+           if(name_string[name_string.length-1] == "t") {
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("b")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("c")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("d")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("f")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("g")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("h")] += Name_Generator.#rand_int(4,40);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("j")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("k")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("l")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("m")] -= Name_Generator.#rand_int(3,30);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("n")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("p")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("q")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("r")] += Name_Generator.#rand_int(2,20);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("s")] += Name_Generator.#rand_int(9,90);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("t")] -= Name_Generator.#rand_int(2,20);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("v")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("w")] -= Name_Generator.#rand_int(6,60);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("x")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("y")] -= Name_Generator.#rand_int(6,60);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("z")] = 0;
+           }
+
+           if(name_string[name_string.length-1] == "v") {
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("b")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("c")] -= Name_Generator.#rand_int(1,10);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("d")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("f")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("g")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("h")] -= Name_Generator.#rand_int(3,30);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("j")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("k")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("l")] -= Name_Generator.#rand_int(2,20);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("m")] -= Name_Generator.#rand_int(3,30);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("n")] -= Name_Generator.#rand_int(3,30);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("p")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("q")] - 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("r")] -= Name_Generator.#rand_int(3,30);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("s")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("t")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("v")] -= Name_Generator.#rand_int(4,40);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("w")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("x")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("y")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("z")] = 0;
+           }
+
+           if(name_string[name_string.length-1] == "w") {
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("b")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("c")] -= Name_Generator.#rand_int(1,10);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("d")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("f")] - 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("g")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("h")] += Name_Generator.#rand_int(2,20);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("j")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("k")] -= Name_Generator.#rand_int(1,10);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("l")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("m")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("n")] -= Name_Generator.#rand_int(1,10);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("p")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("q")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("r")] += Name_Generator.#rand_int(2,20);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("s")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("t")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("v")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("w")] -= Name_Generator.#rand_int(3,30);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("x")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("y")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("z")] = 0;
+           }
+
+           if(name_string[name_string.length-1] == "x") {
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("b")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("c")] -= Name_Generator.#rand_int(5,50);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("d")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("f")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("g")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("h")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("j")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("k")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("l")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("m")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("n")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("p")] -= Name_Generator.#rand_int(5,50);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("q")] -= Name_Generator.#rand_int(5,50);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("r")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("s")] -= Name_Generator.#rand_int(5,50);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("t")] -= Name_Generator.#rand_int(5,50);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("v")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("w")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("x")] -= Name_Generator.#rand_int(5,50);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("y")] -= Name_Generator.#rand_int(4,40);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("z")] = 0;
+           }
+
+           if(name_string[name_string.length-1] == "y") {
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("b")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("c")] -= Name_Generator.#rand_int(5,50);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("d")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("f")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("g")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("h")] -= Name_Generator.#rand_int(1,10);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("j")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("k")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("l")] -= Name_Generator.#rand_int(6,60);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("m")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("n")] -= Name_Generator.#rand_int(5,50);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("p")] -= Name_Generator.#rand_int(6,60);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("q")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("r")] -= Name_Generator.#rand_int(3,30);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("s")] -= Name_Generator.#rand_int(6,60);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("t")] -= Name_Generator.#rand_int(6,60);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("v")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("w")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("x")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("y")] -= Name_Generator.#rand_int(4,40);
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("z")] = 0;
+           }
+
+           if(name_string[name_string.length-1] == "z") {
+             /*
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("b")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("c")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("d")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("f")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("g")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("h")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("j")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("k")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("l")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("m")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("n")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("p")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("q")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("r")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("s")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("t")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("v")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("w")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("x")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("y")] = 0;
+             this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("z")] = 0;
+             */
+             //No words have a Z followed by another consonant. So next letter MUST be a vowel.
+             name_string += Name_Generator.#get_weighted_probability(Name_Generator.#VOWELS, this.vowel_weights_mod);
+             is_coda = true;
+             coda_length = 0;
+             continue;
+           }
          }
 
-         if(name_string[name_string.length-1] == "c") {
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("b")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("c")] -= Name_Generator.#rand_int(1,10);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("d")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("f")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("g")] -= Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("h")] += Name_Generator.#rand_int(3,30);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("j")] -= Name_Generator.#rand_int(8,80);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("k")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("l")] += Name_Generator.#rand_int(1, 10);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("m")] -= Name_Generator.#rand_int(6,60);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("n")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("p")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("q")] =0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("r")] += Name_Generator.#rand_int(3,30);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("s")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("t")] -= Name_Generator.#rand_int(2, 20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("v")] -= Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("w")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("x")] -= Name_Generator.#rand_int(7,70);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("y")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("z")] -= Name_Generator.#rand_int(3,30);
-         }
-
-         if(name_string[name_string.length-1] == "d") {
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("b")] -= Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("c")] -= Name_Generator.#rand_int(1,10);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("d")] -= Name_Generator.#rand_int(7,70);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("f")] -= Name_Generator.#rand_int(8,80);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("g")] -= Name_Generator.#rand_int(4,40);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("h")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("j")] -= Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("k")] -= Name_Generator.#rand_int(3,30);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("l")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("m")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("n")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("p")] -= Name_Generator.#rand_int(4,40);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("q")] -= Name_Generator.#rand_int(3,30);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("r")] += Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("s")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("t")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("v")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("w")] += Name_Generator.#rand_int(5,50);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("x")] -= Name_Generator.#rand_int(3,30);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("y")] += Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("z")] -= Name_Generator.#rand_int(2,20);
-         }
-
-         if(name_string[name_string.length-1] == "f") {
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("b")] -= Name_Generator.#rand_int(3,30);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("c")] -= Name_Generator.#rand_int(3,30);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("d")] -= Name_Generator.#rand_int(4,40);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("f")] -= Name_Generator.#rand_int(1,10);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("g")] -= Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("h")] -= Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("j")] -= Name_Generator.#rand_int(1,10);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("k")] -= Name_Generator.#rand_int(1,10);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("l")] += Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("m")] -= Name_Generator.#rand_int(1,10);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("n")] -= Name_Generator.#rand_int(1,10);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("p")] -= Name_Generator.#rand_int(3,30);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("q")] -= Name_Generator.#rand_int(1,30);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("r")] += Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("s")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("t")] += Name_Generator.#rand_int(1,10);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("v")] -= Name_Generator.#rand_int(7,70);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("w")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("x")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("y")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("z")] -= Name_Generator.#rand_int(2,20);
-         }
-
-         if(name_string[name_string.length-1] == "g") {
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("b")] -= Name_Generator.#rand_int(1,10);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("c")] -= Name_Generator.#rand_int(1,10);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("d")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("f")] -= Name_Generator.#rand_int(1,10);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("g")] -= Name_Generator.#rand_int(1,10);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("h")] += Name_Generator.#rand_int(1,10);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("j")] -= Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("k")] -= Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("l")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("m")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("n")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("p")] -= Name_Generator.#rand_int(1,10);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("q")] -= Name_Generator.#rand_int(6,60);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("r")] += Name_Generator.#rand_int(1,10);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("s")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("t")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("v")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("w")] -= Name_Generator.#rand_int(1,10);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("x")] -= Name_Generator.#rand_int(1,10);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("y")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("z")] -= Name_Generator.#rand_int(9,90);
-         }
-
-         if(name_string[name_string.length-1] == "h") {
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("b")] -= Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("c")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("d")] -= Name_Generator.#rand_int(7,70);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("f")] -= Name_Generator.#rand_int(6,60);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("g")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("h")] -= Name_Generator.#rand_int(1,10);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("j")] -= Name_Generator.#rand_int(5,50);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("k")] -= Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("l")] -= Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("m")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("n")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("p")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("q")] -= Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("r")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("s")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("t")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("v")] -= Name_Generator.#rand_int(1,10);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("w")] -= Name_Generator.#rand_int(1,50);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("x")] -= Name_Generator.#rand_int(2,50);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("y")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("z")] -= Name_Generator.#rand_int(2,50);
-         }
-
-         if(name_string[name_string.length-1] == "j") {
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("b")] -= Name_Generator.#rand_int(1,10);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("c")] -= Name_Generator.#rand_int(1,10);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("d")] -= Name_Generator.#rand_int(1,10);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("f")] -= Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("g")] -= Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("h")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("j")] -= Name_Generator.#rand_int(1,10);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("k")] -= Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("l")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("m")] -= Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("n")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("p")] -= Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("q")] -= Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("r")] += Name_Generator.#rand_int(1,10);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("s")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("t")] -= Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("v")] -= Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("w")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("x")] -= Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("y")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("z")] -= Name_Generator.#rand_int(2,20);
-         }
-
-         if(name_string[name_string.length-1] == "k") {
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("b")] -= Name_Generator.#rand_int(1,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("c")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("d")] -= Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("f")] -= Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("g")] -= Name_Generator.#rand_int(20,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("h")] += Name_Generator.#rand_int(1,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("j")] -= Name_Generator.#rand_int(8,80);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("k")] -= Name_Generator.#rand_int(1,10);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("l")] -= Name_Generator.#rand_int(1,10);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("m")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("n")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("p")] -= Name_Generator.#rand_int(1,10);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("q")] -= Name_Generator.#rand_int(1,10);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("r")] += Name_Generator.#rand_int(1,10);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("s")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("t")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("v")] -= Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("w")] -= Name_Generator.#rand_int(8,80);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("x")] -= Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("y")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("z")] -= Name_Generator.#rand_int(3,30);
-         }
-
-         if(name_string[name_string.length-1] == "l") {
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("b")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("c")] -= Name_Generator.#rand_int(1,10);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("d")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("f")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("g")] -= Name_Generator.#rand_int(1,10);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("h")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("j")] -= Name_Generator.#rand_int(8,80);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("k")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("l")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("m")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("n")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("p")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("q")] -= Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("r")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("s")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("t")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("v")] -= Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("w")] -= Name_Generator.#rand_int(8,80);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("x")] -= Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("y")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("z")] -= Name_Generator.#rand_int(2,30);
-         }
-
-         if(name_string[name_string.length-1] == "m") {
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("b")] -= Name_Generator.#rand_int(3,30);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("c")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("d")] -= Name_Generator.#rand_int(1,10);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("f")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("g")] -= Name_Generator.#rand_int(4,40);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("h")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("j")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("k")] -= Name_Generator.#rand_int(5,50);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("l")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("m")] -= Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("n")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("p")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("q")] -= Name_Generator.#rand_int(3,30);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("r")] -= Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("s")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("t")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("v")] -= Name_Generator.#rand_int(3,30);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("w")] -= Name_Generator.#rand_int(8,80);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("x")] -= Name_Generator.#rand_int(5,50);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("y")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("z")] -= Name_Generator.#rand_int(5,50);
-         }
-
-         if(name_string[name_string.length-1] == "n") {
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("b")] -= Name_Generator.#rand_int(7,70);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("c")] -= Name_Generator.#rand_int(1,10);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("d")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("f")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("g")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("h")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("j")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("k")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("l")] -= Name_Generator.#rand_int(3,30);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("m")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("n")] -= Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("p")] -= Name_Generator.#rand_int(1,10);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("q")] -= Name_Generator.#rand_int(4,40);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("r")] -= Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("s")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("t")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("v")] -= Name_Generator.#rand_int(3,30);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("w")] -= Name_Generator.#rand_int(5,50);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("x")] -= Name_Generator.#rand_int(8,80);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("y")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("z")] -= Name_Generator.#rand_int(2,20);
-         }
-
-         if(name_string[name_string.length-1] == "p") {
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("b")] -= Name_Generator.#rand_int(3,30);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("c")] -= Name_Generator.#rand_int(4,40);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("d")] -= Name_Generator.#rand_int(7,70);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("f")] -= Name_Generator.#rand_int(4,40);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("g")] -= Name_Generator.#rand_int(5,50);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("h")] -= Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("j")] -= Name_Generator.#rand_int(6,60);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("k")] -= Name_Generator.#rand_int(4,40);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("l")] -= Name_Generator.#rand_int(1,10);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("m")] -= Name_Generator.#rand_int(1,10);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("n")] -= Name_Generator.#rand_int(1,10);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("p")] -= Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("q")] -= Name_Generator.#rand_int(4,40);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("r")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("s")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("t")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("v")] -= Name_Generator.#rand_int(4,40);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("w")] -= Name_Generator.#rand_int(4,40);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("x")] -= Name_Generator.#rand_int(4,40);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("y")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("z")] -= Name_Generator.#rand_int(5,50);
-         }
-
-         if(name_string[name_string.length-1] == "q") {
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("b")] -= Name_Generator.#rand_int(4,40);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("c")] -= Name_Generator.#rand_int(4,40);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("d")] -= Name_Generator.#rand_int(4,40);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("f")] -= Name_Generator.#rand_int(5,50);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("g")] -= Name_Generator.#rand_int(5,50);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("h")] -= Name_Generator.#rand_int(5,50);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("j")] -= Name_Generator.#rand_int(5,50);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("k")] -= Name_Generator.#rand_int(5,50);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("l")] -= Name_Generator.#rand_int(4,40);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("m")] -= Name_Generator.#rand_int(5,50);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("n")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("p")] -= Name_Generator.#rand_int(5,50);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("q")] -= Name_Generator.#rand_int(3,30);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("r")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("s")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("t")] -= Name_Generator.#rand_int(4,40);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("v")] -= Name_Generator.#rand_int(6,60);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("w")] -= Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("x")] -= Name_Generator.#rand_int(6,60);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("y")] -= Name_Generator.#rand_int(6,60);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("z")] -= Name_Generator.#rand_int(6,60);
-         }
-
-         if(name_string[name_string.length-1] == "r") {
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("b")] -= Name_Generator.#rand_int(3,30);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("c")] -= Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("d")] -= Name_Generator.#rand_int(3,30);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("f")] -= Name_Generator.#rand_int(4,40);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("g")] -= Name_Generator.#rand_int(7,70);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("h")] -= Name_Generator.#rand_int(1,10);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("j")] -= Name_Generator.#rand_int(4,40);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("k")] -= Name_Generator.#rand_int(4,40);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("l")] -= Name_Generator.#rand_int(3,30);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("m")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("n")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("p")] -= Name_Generator.#rand_int(4,40);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("q")] -= Name_Generator.#rand_int(8,80);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("r")] -= Name_Generator.#rand_int(4,40);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("s")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("t")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("v")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("w")] -= Name_Generator.#rand_int(5,50);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("x")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("y")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("z")] -= Name_Generator.#rand_int(2,20);
-         }
-
-         if(name_string[name_string.length-1] == "s") {
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("b")] -= Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("c")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("d")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("f")] -= Name_Generator.#rand_int(3,30);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("g")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("h")] += Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("j")] -= Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("k")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("l")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("m")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("n")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("p")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("q")] -= Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("r")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("s")] -= Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("t")] += Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("v")] -= Name_Generator.#rand_int(3,30);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("w")] += Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("x")] -= Name_Generator.#rand_int(4,40);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("y")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("z")] -= Name_Generator.#rand_int(5,50);
-         }
-
-         if(name_string[name_string.length-1] == "t") {
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("b")] -= Name_Generator.#rand_int(4,40);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("c")] -= Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("d")] -= Name_Generator.#rand_int(4,40);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("f")] -= Name_Generator.#rand_int(3,30);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("g")] -= Name_Generator.#rand_int(3,30);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("h")] += Name_Generator.#rand_int(4,40);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("j")] -= Name_Generator.#rand_int(4,40);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("k")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("l")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("m")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("n")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("p")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("q")] -= Name_Generator.#rand_int(3,30);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("r")] += Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("s")] += Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("t")] -= Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("v")] -= Name_Generator.#rand_int(7,70);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("w")] -= Name_Generator.#rand_int(6,60);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("x")] -= Name_Generator.#rand_int(1,10);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("y")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("z")] -= Name_Generator.#rand_int(1,10);
-         }
-
-         if(name_string[name_string.length-1] == "v") {
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("b")] -= Name_Generator.#rand_int(1,10);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("c")] -= Name_Generator.#rand_int(1,10);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("d")] -= Name_Generator.#rand_int(1,10);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("f")] -= Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("g")] -= Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("h")] -= Name_Generator.#rand_int(3,30);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("j")] -= Name_Generator.#rand_int(3,30);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("k")] -= Name_Generator.#rand_int(1,10);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("l")] -= Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("m")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("n")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("p")] -= Name_Generator.#rand_int(3,30);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("q")] - 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("r")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("s")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("t")] -= Name_Generator.#rand_int(3,30);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("v")] -= Name_Generator.#rand_int(4,40);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("w")] -= Name_Generator.#rand_int(3,30);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("x")] -= Name_Generator.#rand_int(3,30);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("y")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("z")] -= Name_Generator.#rand_int(5,50);
-         }
-
-         if(name_string[name_string.length-1] == "w") {
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("b")] -= Name_Generator.#rand_int(3,30);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("c")] -= Name_Generator.#rand_int(1,10);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("d")] -= Name_Generator.#rand_int(1,10);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("f")] -= Name_Generator.#rand_int(7,70);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("g")] -= Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("h")] += Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("j")] -= Name_Generator.#rand_int(3,30);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("k")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("l")] -= Name_Generator.#rand_int(1,10);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("m")] -= Name_Generator.#rand_int(4,40);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("n")] -= Name_Generator.#rand_int(1,10);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("p")] -= Name_Generator.#rand_int(1,10);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("q")] -= Name_Generator.#rand_int(3,30);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("r")] += Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("s")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("t")] -= Name_Generator.#rand_int(3,30);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("v")] -= Name_Generator.#rand_int(100,100);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("w")] -= Name_Generator.#rand_int(3,30);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("x")] -= Name_Generator.#rand_int(100,100);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("y")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("z")] -= Name_Generator.#rand_int(5,50);
-         }
-
-         if(name_string[name_string.length-1] == "x") {
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("b")] -= Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("c")] -= Name_Generator.#rand_int(1,10);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("d")] -= Name_Generator.#rand_int(4,40);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("f")] -= Name_Generator.#rand_int(5,50);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("g")] -= Name_Generator.#rand_int(5,50);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("h")] -= Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("j")] -= Name_Generator.#rand_int(4,40);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("k")] -= Name_Generator.#rand_int(3,30);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("l")] -= Name_Generator.#rand_int(1,10);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("m")] -= Name_Generator.#rand_int(3,30);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("n")] -= Name_Generator.#rand_int(3,30);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("p")] -= Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("q")] -= Name_Generator.#rand_int(5,50);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("r")] -= Name_Generator.#rand_int(3,30);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("s")] -= Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("t")] = 0;
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("v")] -= Name_Generator.#rand_int(6,60);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("w")] -= Name_Generator.#rand_int(6,60);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("x")] -= Name_Generator.#rand_int(5,50);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("y")] -= Name_Generator.#rand_int(4,40);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("z")] -= Name_Generator.#rand_int(6,60);
-         }
-
-         if(name_string[name_string.length-1] == "y") {
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("b")] -= Name_Generator.#rand_int(7,70);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("c")] -= Name_Generator.#rand_int(5,50);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("d")] -= Name_Generator.#rand_int(4,40);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("f")] -= Name_Generator.#rand_int(5,50);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("g")] -= Name_Generator.#rand_int(2,20);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("h")] -= Name_Generator.#rand_int(1,10);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("j")] -= Name_Generator.#rand_int(4,40);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("k")] -= Name_Generator.#rand_int(3,30);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("l")] -= Name_Generator.#rand_int(4,40);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("m")] -= Name_Generator.#rand_int(5,50);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("n")] -= Name_Generator.#rand_int(5,50);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("p")] -= Name_Generator.#rand_int(6,60);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("q")] -= Name_Generator.#rand_int(6,60);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("r")] -= Name_Generator.#rand_int(3,30);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("s")] -= Name_Generator.#rand_int(1,10);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("t")] -= Name_Generator.#rand_int(6,60);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("v")] -= Name_Generator.#rand_int(6,60);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("w")] -= Name_Generator.#rand_int(7,70);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("x")] -= Name_Generator.#rand_int(7,70);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("y")] -= Name_Generator.#rand_int(4,40);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("z")] -= Name_Generator.#rand_int(9,90);
-         }
-
-         if(name_string[name_string.length-1] == "z") {
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("b")] -= Name_Generator.#rand_int(100,100);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("c")] -= Name_Generator.#rand_int(100,100);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("d")] -= Name_Generator.#rand_int(100,100);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("f")] -= Name_Generator.#rand_int(100,100);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("g")] -= Name_Generator.#rand_int(100,100);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("h")] -= Name_Generator.#rand_int(5,50);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("j")] -= Name_Generator.#rand_int(100,100);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("k")] -= Name_Generator.#rand_int(6,60);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("l")] -= Name_Generator.#rand_int(7,70);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("m")] -= Name_Generator.#rand_int(5,50);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("n")] -= Name_Generator.#rand_int(3,30);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("p")] -= Name_Generator.#rand_int(6,60);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("q")] -= Name_Generator.#rand_int(100,100);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("r")] -= Name_Generator.#rand_int(8,80);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("s")] -= Name_Generator.#rand_int(5,50);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("t")] -= Name_Generator.#rand_int(5,50);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("v")] -= Name_Generator.#rand_int(100,100);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("w")] -= Name_Generator.#rand_int(8,80);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("x")] -= Name_Generator.#rand_int(100,100);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("y")] -= Name_Generator.#rand_int(3,30);
-           this.consonant_weights_mod[Name_Generator.#CONSONANTS.indexOf("z")] -= Name_Generator.#rand_int(7,70);
-         }
          //console.log(this.consonant_weights_mod);
 
         //FIRST LETTER
@@ -727,6 +757,7 @@ class Name_Generator {
             name_string += Name_Generator.#get_weighted_probability(Name_Generator.#CONSONANTS, this.consonant_weights_mod);
           } else {
             name_string += Name_Generator.#VOWELS[ Name_Generator.#rand_int(0, Name_Generator.#VOWELS.length-1) ];
+            is_coda = true;
           }
         }
 
@@ -741,6 +772,7 @@ class Name_Generator {
               this.vowel_weights_mod[Name_Generator.#VOWELS.indexOf(name_string[name_string.length-1])] = 1;
               this.#manual_modify_weights(name_string[name_string.length-1], this.vowel_weights_mod, 10, 100);
               name_string += Name_Generator.#get_weighted_probability(Name_Generator.#VOWELS, this.vowel_weights_mod);
+              is_coda = true;
             } else {
               //Second letter is a consonant
               name_string += Name_Generator.#get_weighted_probability(Name_Generator.#CONSONANTS, this.consonant_weights_mod);
@@ -756,6 +788,7 @@ class Name_Generator {
             if(Name_Generator.#rand_int(0,10) < 9) {
               //Second letter is a vowel.
               name_string += Name_Generator.#get_weighted_probability(Name_Generator.#VOWELS, this.vowel_weights_mod);
+              is_coda = true;
               //Because first letter was a consonant and second letter was a vowel. There is a small possibility that the name loop ends.
               if(Name_Generator.#rand_int(0,50) == 50) {
                 //If true, end loop
@@ -793,6 +826,7 @@ class Name_Generator {
             } else {
               //Set the 3rd letter as a vowel
               name_string += Name_Generator.#get_weighted_probability(Name_Generator.#VOWELS, this.vowel_weights_mod);
+              is_coda = true;
             }
           }
 
@@ -805,7 +839,12 @@ class Name_Generator {
               name_string += Name_Generator.#get_weighted_probability(Name_Generator.#CONSONANTS, this.consonant_weights_mod);
             } else {
               //Small chance that the next letter is a vowel. But more likely a consonant.
-              name_string += (Name_Generator.#rand_int(0,20) == 20) ? Name_Generator.#get_weighted_probability(Name_Generator.#VOWELS, this.vowel_weights_mod) : Name_Generator.#get_weighted_probability(Name_Generator.#CONSONANTS, this.consonant_weights_mod);
+              if(Name_Generator.#rand_int(0,20) == 20) {
+                name_string += Name_Generator.#get_weighted_probability(Name_Generator.#VOWELS, this.vowel_weights_mod);
+                is_coda = true;
+              } else {
+                name_string += Name_Generator.#get_weighted_probability(Name_Generator.#CONSONANTS, this.consonant_weights_mod);
+              }
             }
             continue;
           }
@@ -824,6 +863,7 @@ class Name_Generator {
             name_string += Name_Generator.#get_weighted_probability(Name_Generator.#CONSONANTS, this.consonant_weights_mod);
           } else {
             name_string += Name_Generator.#get_weighted_probability(Name_Generator.#VOWELS, this.vowel_weights_mod);
+            is_coda = true;
           }
 
         }
